@@ -1,0 +1,125 @@
+1. BFS
+public int numIslands(char[][] grid) {
+	int count = 0;
+	for(int i = 0; i < grid.length; i++) {
+		for(int j = 0; j < grid[0].length; j++) {
+			if(grid[i][j] == 1) {
+				bfs(grid, i, j);
+				count++;
+			}
+		}
+	}
+	return count;
+}
+private void bfs(char[][] grid, int i, int j) {
+	int[] dirX = new int[]{1, -1, 0, 0};
+	int[] dirY = new int[]{0, 0, 1, -1};
+	Queue<Integer> queue = new LinkedList<>();
+	queue.offer(i * grid[0].length + j);
+	while(!queue.isEmpty()) {
+		int pos = queue.poll();
+		int curX = pos / grid.length;
+		int curY = pos / grid[0].length;
+		for(int i = 0; i < 4; i++) {
+			int newX = curX + dirX[i];
+			int newY = curY + dirY[i];
+			if(newX < 0 || newX >= grid.length || newY < 0 || newY >= grid[0].length || grid[newX][newY] == 0) {
+				continue;
+			}
+			queue.offer(newX * grid[0].length + newY);
+			grid[newX][newY] = 0;
+		}
+	}
+}
+2. DFS
+public int numIslands(char[][] grid) {
+	int count = 0;
+	for(int i = 0; i < grid.length; i++) {
+		for(int j = 0; j < grid[0].length; j++) {
+			if(grid[i][j] == '1') {
+				dfs(grid, i, j);
+				count++;
+			}
+		}
+	}
+	return count;
+}
+private void dfs(char[][] grid, int i, int j) {
+	if(i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || gird[i][j] == '0') return;
+	grid[i, j] = '0';
+	dfs（grid, i + 1, j);
+	dfs(grid, i - 1, j);
+	dfs(grid, i, j + 1);
+	dfs(grid, i, j - 1);
+}
+3. Union Find
+如何用count计算个数？
+1. 每遇到一个1， count++。
+2. 如果当前的1和它四周的1不相连，则要将他们相连，并且count--
+3. 如果当前的1和它四周的1已经相连（在之前连起来的），则count不动
+int[] arr;
+public int numIslands(char[][] grid) {
+		int M = grid.length;
+		if(M == 0) return 0;
+		int N = grid[0].length;
+		arr = new int[M * N];
+		for(int i = 0; i < M; i++) for(int j = 0; j < N; j++) arr[i * N + j] = i * N + j;
+		int count = 0;
+		for(int i = 0; i < M; i++) {
+				for(int j = 0; j < N; j++) {
+						if(grid[i][j] == '0') continue;
+						count++;
+						if(i < M - 1 && grid[i + 1][j] == '1') {
+								if(!isConnected(i * N + j, (i + 1) * N + j)) count--;
+								union(i * N + j, (i + 1) * N + j);
+						}
+						if(j < N - 1 && grid[i][j + 1] == '1') {
+								if(!isConnected(i * N + j, i * N + j + 1)) count--;
+								union(i * N + j, i * N + j + 1);
+						}
+				}
+		}
+		return count;
+}
+private boolean isConnected(int A, int B) {
+		if(getRoot(A) == getRoot(B)) return true;
+		else return false;
+}
+private void union(int A, int B) {
+		int rootA = getRoot(A);
+		int rootB = getRoot(B);
+		arr[rootB] = rootA;
+}
+private int getRoot(int num) {
+		while(arr[num] != num) {
+				num = arr[num];
+		}
+		return num;
+}
+
+public int numIslands(char[][] grid) {
+	if(grid.length == 0) return 0;
+	arr = new int[grid.length * grid[0].length];
+	Arrays.fill(arr, -1);
+	int dirX = new int[]{0, 0, 1, -1};
+	int dirY = new int[]{1, -1, 0, 0};
+	int count = 0;
+	for(int i = 0; i < grid.length; i++) {
+		for(int j = 0; j < grid[0].length; j++) {
+			if(grid[i][j] == '0') continue;
+			count++;
+			int curPos = i * grid[0].length + j;
+			for(int k = 0; k < 4; k++) {
+				int newX = i + dirX[k];
+				int newY = j + dirY[k];
+				int newPos = newX * grid[0].length + newY;
+				if(newX < 0 || newX >= grid.length || newY < 0 || newY >= grid[0].length || grid[newX][newY] == '0' || isConnected(curPos, newPos)) {
+					continue;
+				}
+				count--;
+				union(curPos, newPos);
+			}
+		}
+	}
+	return count;
+}

@@ -1,0 +1,107 @@
+Each node needs to keep record of current shortest steps. Cuz:
+This is not can / can't issue. This is calculate length issue.
+不是先到先得，而是总数最少
+由于是滚动而不是一层一层扒，所以不是先到的那个最近。到了的那个点不能将其mark为-2。应当仍然available。
+在这里采用distance数组来track每个边界点到起点的最短距离。同时当该点距离需要更新时，才做进一步的搜索。
+class Point{
+		int x; int y; int st
+		public Point(int x, int y) {
+				this.x = x; this.y = y;
+		}
+}
+public int shortestDistance(int[][] maze, int[] start, int[] destination) {
+		Queue<Point> queue = new LinkedList<>();
+		int[] dirX = new int[]{0, 0, 1, -1};
+		int[] dirY = new int[]{1, -1, 0, 0};
+		queue.offer(new Point(start[0], start[1], 0));
+
+		while(queue.size() != 0) {
+				Point cur = queue.poll();
+				int curX = cur.x, curY = cur.y;
+				for(int i = 0; i < 4; i++) {
+						int newX = curX, newY = curY;
+						while(newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 1) {
+								newX += dirX[i];
+								newY += dirY[i];
+						}
+						newX -= dirX[i];
+						newY -= dirY[i];
+						if(newX == destination[0] && newY == destination[1]) return cur.step + Math.max(Math.abs(newX - curX), Math.abs(newY - curY));
+						if(maze[newX][newY] == -2) continue;
+						maze[newX][newY] = -2;
+						queue.offer(new Point(newX, newY, cur.step + Math.max(Math.abs(newX - curX), Math.abs(newY - curY))));
+				}
+		}
+		return false;
+}
+
+
+public class Solution {
+    class Point {
+        int x,y,l;
+        public Point(int _x, int _y, int _l) {x=_x;y=_y;l=_l;}
+    }
+    public int shortestDistance(int[][] maze, int[] start, int[] destination) {
+        int m=maze.length, n=maze[0].length;
+        int[][] length=new int[m][n]; // record length
+        for (int i=0;i<m*n;i++) length[i/n][i%n]=Integer.MAX_VALUE;
+        int[][] dir=new int[][] {{-1,0},{0,1},{1,0},{0,-1}};
+        PriorityQueue<Point> list=new PriorityQueue<>((o1,o2)->o1.l-o2.l); // using priority queue
+        list.offer(new Point(start[0], start[1], 0));
+        while (!list.isEmpty()) {
+            Point p=list.poll();
+            if (length[p.x][p.y]<=p.l) continue; // if we have already found a route shorter
+            length[p.x][p.y]=p.l;
+            for (int i=0;i<4;i++) {
+                int xx=p.x, yy=p.y, l=p.l;
+                while (xx>=0 && xx<m && yy>=0 && yy<n && maze[xx][yy]==0) {
+                    xx+=dir[i][0];
+                    yy+=dir[i][1];
+                    l++;
+                }
+                xx-=dir[i][0];
+                yy-=dir[i][1];
+                l--;
+                list.offer(new Point(xx, yy, l));
+            }
+        }
+        return length[destination[0]][destination[1]]==Integer.MAX_VALUE?-1:length[destination[0]][destination[1]];
+    }
+}
+
+class Point{
+				int x; int y; int step;
+				public Point(int x, int y, int step) {
+								this.x = x; this.y = y; this.step = step;
+				}
+}
+public int shortestDistance(int[][] maze, int[] start, int[] destination) {
+		//Queue<Point> queue = new LinkedList<>();
+		//Use priority queue instead of regular queue.
+		int[][] length = new int[maze.length][maze[0].length];
+		for(int i = 0; i < maze.length; i++) for(int j = 0; j < maze[0].length; j++) length[i][j] = Integer.MAX_VALUE;
+		//PriorityQueue<Point> queue = new PriorityQueue<>((o1,o2)->o1.step-o2.step);
+		Queue<Point> queue = new LinkedList<>();
+		int[] dirX = new int[]{1, -1, 0, 0};
+		int[] dirY = new int[]{0, 0, 1, -1};
+		queue.offer(new Point(start[0], start[1], 0));
+		while(queue.size() != 0) {
+				Point cur = queue.poll();
+				int curX = cur.x, curY = cur.y;
+				if(length[curX][curY] <= cur.step) continue;
+				length[curX][curY] = cur.step;
+				for(int i = 0; i < 4; i++) {
+						int newX = curX, newY = curY, curStep = cur.step;
+						while(newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 1) {
+								newX += dirX[i];
+								newY += dirY[i];
+								curStep++;
+						}
+						newX -= dirX[i];
+						newY -= dirY[i];
+						curStep--;
+						queue.offer(new Point(newX, newY, curStep));
+				}
+		}
+		return length[destination[0]][destination[1]]==Integer.MAX_VALUE?-1:length[destination[0]][destination[1]];
+}

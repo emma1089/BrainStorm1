@@ -1,0 +1,34 @@
+//Based on the fact that there's only one single island, we don't need to use DFS/BFS to count the islands.
+//What matters is the shape of islands, ep how one block is conjuncted to other blocks.
+public int islandPerimeter(int[][] grid) {
+	int count = 0;
+	int[] dirX = new int[]{0, 0, 1, -1};
+	int[] dirY = new int[]{1, -1, 0, 0};
+	for(int i = 0; i < grid.length; i++) {
+		for(int j = 0; j < grid[0].length; j++) {
+			if(gird[i][j] == 0) continue;
+			count += 4;
+			grid[i][j] = -1;
+			for(int k = 0; k < 4; k++) {
+				if(grid[i + dirX[k]][j + dirY[k]] == -1) {
+					count--;
+				}
+			}
+		}
+	}
+	return count;
+}
+//Better solution: No need to check neighbors at 4 directions.
+public int islandPerimeter(int[][] grid) {
+		int count = 0;
+		for(int i = 0; i < grid.length; i++) {
+				for(int j = 0; j < grid[0].length; j++) {
+						if(grid[i][j] == 0) continue;
+						count += 4;
+						//不需要考察四个方向。右边和下面即可。
+						if(i < grid.length - 1 && grid[i + 1][j] == 1) count -= 2;
+						if(j < grid[0].length - 1 && grid[i][j + 1] == 1) count -= 2;
+				}
+		}
+		return count;
+}

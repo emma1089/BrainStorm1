@@ -1,0 +1,27 @@
+public boolean hasPath(int[][] maze, int[] start, int[] destination) {
+		Queue<Integer> queue = new LinkedList<>();
+		int[] dirX = new int[]{0, 0, 1, -1};
+		int[] dirY = new int[]{1, -1, 0, 0};
+		queue.offer(start[0] * maze[0].length + start[1]);
+
+		while(queue.size() != 0) {
+				int cur = queue.poll();
+				int curX = cur / maze[0].length, curY = cur % maze[0].length;
+				//maze[curX][curY] = -2;
+				//check direction left:
+				for(int i = 0; i < 4; i++) {
+						int newX = curX, newY = curY;
+						while(newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 1) {
+								newX += dirX[i];
+								newY += dirY[i];
+						}
+						newX -= dirX[i];
+						newY -= dirY[i];
+						if(newX == destination[0] && newY == destination[1]) return true;
+						if(maze[newX][newY] == -2) continue;
+						maze[newX][newY] = -2;
+						queue.offer(newX * maze[0].length + newY);
+				}
+		}
+		return false;
+}

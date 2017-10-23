@@ -1,0 +1,57 @@
+Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
+
+Count the number of distinct islands. An island is considered to be the same as another if and only if one island can be translated (and not rotated or reflected) to equal the other.
+
+Example 1:
+11000
+11000
+00011
+00011
+Given the above grid map, return 1.
+Example 2:
+11011
+10000
+00001
+11011
+Given the above grid map, return 3.
+
+Notice that:
+11
+1
+and
+ 1
+11
+are considered different island shapes, because we do not consider reflection / rotation.
+Note: The length of each dimension in the given grid does not exceed 50.
+//需要记录island的形状 -》 记录遍历路径
+public int numDistinctIslands(int[][] grid) {
+	if(grid.length == 0) return 0;
+	//使用hashset作为筛洗工具可以保证o(n)复杂度
+	//为了使hashset能够工作，保存路径的工具最好是string。如果是list，则就算内容一样，也是两个不同的object。
+	Set<String> paths = new HashSet<>();
+	for(int i = 0; i < grid.length; i++) {
+		for(int j = 0; j < grid[0].length; j++) {
+			if(grid[i][j] == 0) continue;
+			StringBuffer sb = new StringBuffer();
+			helper(grid, i, j, i, j, sb);
+			paths.add(sb.toString().trim());
+		}
+	}
+	return paths.size();
+}
+//Special Attention: Can't smash 2d to 1d using x * grid[0].length + y to record the path. Corner case:
+0 1 1
+1 1 1
+0 0 0
+1 1 1
+1 1 0
+both islands are : 0 3 4 1 2
+private void helper(int[][] grid, int x, int y, int startX, int startY, StringBuffer sb) {
+	if(x < 0 || x >= grid.length || y < 0 || y >= grid[0].length || grid[x][y] == 0) return;
+	sb.append(x - startX).append(",").append(y - startY).append(" ");
+	grid[x][y] = 0;
+	helper(grid, x + 1, y, startX, startY, sb);
+	helper(grid, x - 1, y, startX, startY, sb);
+	helper(grid, x, y + 1, startX, startY, sb);
+	helper(grid, x, y - 1, startX, startY, sb);
+}

@@ -1,0 +1,77 @@
+2d grid map of m rows and n columns is initially filled with water. We may perform an addLand operation which turns the water at position
+(row, col) into a land. Given a list of positions to operate, count the number of islands after each addLand operation.
+An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically.
+You may assume all four edges of the grid are all surrounded by water.
+
+Example:
+
+Given m = 3, n = 3, positions = [[0,0], [0,1], [1,2], [2,1]].
+Initially, the 2d grid grid is filled with water. (Assume 0 represents water and 1 represents land).
+
+0 0 0
+0 0 0
+0 0 0
+Operation #1: addLand(0, 0) turns the water at grid[0][0] into a land.
+
+1 0 0
+0 0 0   Number of islands = 1
+0 0 0
+Operation #2: addLand(0, 1) turns the water at grid[0][1] into a land.
+
+1 1 0
+0 0 0   Number of islands = 1
+0 0 0
+Operation #3: addLand(1, 2) turns the water at grid[1][2] into a land.
+
+1 1 0
+0 0 1   Number of islands = 2
+0 0 0
+Operation #4: addLand(2, 1) turns the water at grid[2][1] into a land.
+
+1 1 0
+0 0 1   Number of islands = 3
+0 1 0
+We return the result as an array: [1, 1, 2, 3]
+
+这道题只能用union find来做才不会超时
+int[] arr;
+public List<Integer> numIslands2(int m, int n, int[][] positions) {
+	List<Integer> res = new ArrayList<>();
+	if(positions.length == 0) return res;
+	arr = new int[m * n];
+	//There's no actual island matrix. Since no need to create one, we use -1 value in the arr to mark whether is position is for islands or not. If -1, means current position is not island.
+	Arrays.fill(arr, -1);
+	int[] dirX = new int[]{0, 0, 1, -1};
+	int[] dirY = new int[]{1, -1, 0, 0};
+	int count = 0;
+	for(int i = 0; i < positions.length; i++) {
+		//everytime placing an island, count always plus one first.
+		count++;
+		int curPos = positions[i][0] * n  + positions[i][1];
+		//check the surrounding area to see if there's already island around.
+		for(int j = 0; j < 4; j++) {
+			int newX = positions[i][0] + dirX[j];
+			int newY = positions[i][1] + dirY[j];
+			int newPos = newX * n + newY;
+			if(newX < 0 || newX >= m || newY < 0 || newY >= n || arr[newPos] == -1 || isConnected(curPos, newPos)) continue;
+			count--;
+			union(curPos, newPos);
+		}
+	}
+	return count;
+}
+-(void)isConnected(int A, int B) {
+	return getRoot(A) == getRoot(B);
+}
+-(void)union(int A, int B) {
+//两个node合并实际上是各自老大哥的合并
+	int rootA = getRoot(A);
+	int rootB = getRoot(B);
+	arr[rootB] = rootA;
+}
+-(void)getRoot(int num) {
+	while(arr[num] != num) {
+		num = arr[num];
+	}
+	return num;
+}

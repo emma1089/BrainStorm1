@@ -1,0 +1,79 @@
+You are asked to cut off trees in a forest for a golf event. The forest is represented as a non-negative 2D map, in this map:
+
+0 represents the obstacle can't be reached.
+1 represents the ground can be walked through.
+The place with number bigger than 1 represents a tree can be walked through, and this positive number represents the tree's height.
+You are asked to cut off all the trees in this forest in the order of tree's height - always cut off the tree with lowest height first. And after cutting, the original place has the tree will become a grass (value 1).
+
+You will start from the point (0, 0) and you should output the minimum steps you need to walk to cut off all the trees. If you can't cut off all the trees, output -1 in that situation.
+
+You are guaranteed that no two trees have the same height and there is at least one tree needs to be cut off.
+
+Example 1:
+Input:
+[
+ [1,2,3],
+ [0,0,4],
+ [7,6,5]
+]
+Output: 6
+Example 2:
+Input:
+[
+ [1,2,3],
+ [0,0,0],
+ [7,6,5]
+]
+Output: -1
+Example 3:
+Input:
+[
+ [2,3,4],
+ [0,0,5],
+ [8,7,6]
+]
+Output: 6
+Explanation: You started from the point (0,0) and you can cut off the tree in (0,0) directly without walking.
+Hint: size of the given matrix will not exceed 50x50.
+
+
+此方法错误
+class Tree {
+	int height; int step;
+	public Tree(int height, int step) {
+		this.height = height;
+		this.step = step;
+	}
+}
+public int cutOffTree(List<List<Integer>> forest) {
+	if(forest.size() == 0) return 0;
+	int[] dirX = new int[]{0, 0, 1, -1};
+	int[] dirY = new int[]{1, -1, 0, 0};
+	Queue<Integer> queue = new LinkedList<>();
+	List<Tree> trees = new ArrayList<>();
+	queue.offer(0);
+	int step = 0;
+	while(!queue.isEmpty()) {
+		int size = queue.size();
+		for(int i = 0; i < size; i++) {
+			int cur = queue.poll();
+			int curX = cur / forest.get(0).size();
+			int curY = cur % forest.get(0).size();
+			trees.add(new Tree(forest.get(curX).get(curY), step));
+			for(int k = 0; k < 4; k++) {
+				int newX = curX + dirX[k], newY =  curY + dirY[k];
+				if(newX < 0 || newX >= forest.size() || newY < 0 || newY >= forest.get(0).size() || forest.get(newX).get(newY) == 0 || forest.get(newX).get(newY) < 0) continue;
+				List temp = forest.get(newX);
+				temp.set(newY, -1 * temp.get(newY));
+				forest.set(newX, temp);
+				queue.offer(newX * forest.get(0).size() + newY);
+			}
+		}
+		step++;
+	}
+	Collections.sort(trees, (o1, o2) -> o1.height - o2.height);
+}
+正确方法：（草泥马，好无聊的题）
+1. Since we have to cut trees in order of their height, we first put trees (int[] {row, col, height}) into a priority queue and sort by height.
+2. Poll each tree from the queue and use BFS to find out steps needed.
+The worst case time complexity could be O(m^2 * n^2) (m = number of rows, n = number of columns) since there are m * n trees and for each BFS worst case time complexity is O(m * n) too.

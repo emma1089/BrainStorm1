@@ -1,0 +1,30 @@
+棋盘题：
+200. Number of Islands: DFS; BFS; Union Find(most important)
+305. Number of Islands II: Union Find
+695. Max Area of Island: Number of Island + max(max, ___)
+463. Island Perimeter: Found a '1', add 4; Found a neighbor, delete by 2; swipe only two directions right & down.
+694. Number of Distinct Islands: Number of Islands + keep records of island traverse path by constructing a string; must not be a arraylist; must not flat 2d to 1d
+130. Surrounded Regions DFS / BFS to track 'O' chain starting from the margin edge, mark them to '#'; Then flip all remained "O" to "X"; Flip '#' back to 'O'; Union-Find
+417. Pacific Atlantic Water Flow
+542. 01 Matrix
+490. The Maze II
+499. The Maze III
+675. Cut Off Trees for Golf Event 烂题
+
+Graph:
+323. Number of Connected Components in an Undirected Graph: The basic case of Union-Find;
+547. Friend Circles: for i = 0 to N for j = i + 1 to N Union - Find
+261. Graph Valid Tree: Union - Find. If a and b already connected, means there will be a cycle, return false; if there's more than one group, return false.
+685. Redundant Connection
+685. Redundant Connection II
+
+String:
+Abbreviation题型
+408. Valid Word Abbreviation:注意corner case (考string)
+320. Generalized Abbreviation: for current character, two cases 1) keep it, keep backtracking the following string, count reset. 2) abbreviate it, count plus 1 (考backtracking)
+288. Unique Word Abbreviation
+Array:
+HashMap
+128. Longest Consecutive Sequence HashSet法 遇到co
+Add to List
+408. Valid Word Abbreviationnsecutive题，主动想到 +1 or -1

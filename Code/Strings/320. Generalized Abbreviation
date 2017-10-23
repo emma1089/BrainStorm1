@@ -1,0 +1,24 @@
+Write a function to generate the generalized abbreviations of a word.
+
+Example:
+Given word = "word", return the following list (order does not matter):
+["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+The idea is: for each character, we can keep it or abbreviate it.
+1) To keep it, we add it to current solution and cary on backtracking.
+2) To abbreviate it, we don't add it to current solution, but plus the count.
+
+public List<String> generateAbbreviations(String word) {
+	List<String> res = new ArrayList<>();
+
+}
+private void helper(List<String> res, String word, String cur, int pos, int count) {
+	if(pos == word.length()) {
+		if(count > 0) cur += count;
+		res.add(cur);
+		return;
+	}
+	//To abbreviate it
+	helper(res, word, cur, pos + 1, count + 1);
+	//To keep it
+	helper(res, word, cur + word.charAt(pos), pos + 1, 0);
+}

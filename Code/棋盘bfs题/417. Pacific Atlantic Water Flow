@@ -1,0 +1,78 @@
+Given an m x n matrix of non-negative integers representing the height of each unit cell in a continent, the "Pacific ocean" touches the left and top edges of the matrix and the "Atlantic ocean" touches the right and bottom edges.
+
+Water can only flow in four directions (up, down, left, or right) from a cell to another one with height equal or lower.
+
+Find the list of grid coordinates where water can flow to both the Pacific and Atlantic ocean.
+
+Note:
+The order of returned grid coordinates does not matter.
+Both m and n are less than 150.
+Example:
+
+Given the following 5x5 matrix:
+
+  Pacific ~   ~   ~   ~   ~
+       ~  1   2   2   3  (5) *
+       ~  3   2   3  (4) (4) *
+       ~  2   4  (5)  3   1  *
+       ~ (6) (7)  1   4   5  *
+       ~ (5)  1   1   2   4  *
+          *   *   *   *   * Atlantic
+
+Return:
+
+[[0, 4], [1, 3], [1, 4], [2, 2], [3, 0], [3, 1], [4, 0]] (positions with parentheses in above matrix).
+
+Two Queue and add all the Pacific border to one queue; Atlantic border to another queue.
+Keep a visited matrix for each queue. In the end, add the cell visited by two queue to the result.
+BFS: Water flood from ocean to the cell. Since water can only flow from high/equal cell to low cell, add the neighboor cell with height larger or equal to current cell to the queue and mark as visited.
+
+public List<int[]> pacificAtlantic(int[][] matrix) {
+	List<int[]> res = new ArrayList<>();
+	if(matrix.length == 0) return res;
+	int[] dirX = new int[]{0, 0, 1, -1};
+	int[] dirY = new int[]{1, -1, 0, 0};
+	Queue<Integer> queue1 = new LinkedList<>();
+	Queue<Integer> queue2 = new LinkedList<>();
+	boolean[][] visited1 = new boolean[matrix.length][matrix[0].length];
+	boolean[][] visited2 = new boolean[matrix.length][matrix[0].length];
+	//从边界考虑
+	for(int i = 0; i < matrix.length; i++) {
+		for(int j = 0; j < matrix[0].length; j++) {
+			if(i == 0 || j == 0) {
+				queue1.offer(i * matrix[0].length + j);
+				visited1[i][j] = true;
+			}
+			if(i == matrix.length - 1 || j == matrix[0].length - 1) {
+				queue2.offer(i * matrix[0].length + j);
+				visited2[i][j] = true;
+			}
+		}
+	}
+	while(queue1.size() != 0) {
+		int cur = queue1.poll();
+		int curX = cur / matrix[0].length, curY = cur % matrix[0].length;
+		for(int i = 0; i < 4; i++) {
+			int newX = curX + dirX[i], newY = curY + dirY[i];
+			if(newX < 0 || newX >= matrix.length || newY < 0 || newY >= matrix[0].length || visited1[newX][newY] || matrix[newX][newY] < matrix[curX][curY]) continue;
+			visited1[newX][newY] = true;
+			queue1.offer(newX * matrix[0].length + newY);
+		}
+	}
+	while(queue2.size() != 0) {
+		int cur = queue2.poll();
+		int curX = cur / matrix[0].length, curY = cur % matrix[0].length;
+		for(int i = 0; i < 4; i++) {
+			int newX = curX + dirX[i], newY = curY + dirY[i];
+			if(newX < 0 || newX >= matrix.length || newY < 0 || newY >= matrix[0].length || visited[newX][newY] || matrix[newX][newY] < matrix[curX][curY]) continue;
+			visited2[newX][newY] = true;
+			queue2.offer(newX * matrix[0].length + newY);
+		}
+	}
+	for(int i = 0; i < matrix.length; i++) {
+		for(int j = 0; j < matrix[0].length; j++) {
+			if(visited1[i][j] && visited2[i][j]) res.add(new int[]{i, j});
+		}
+	}
+	return res;
+}
